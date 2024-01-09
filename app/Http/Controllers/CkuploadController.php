@@ -17,7 +17,6 @@ class CkuploadController extends Controller
     public function ckeditorUpload(Request $request)
     {
         if ($request->hasFile('upload')) {
-
             $originName = $request->file('upload')->getClientOriginalName();
             $fileName = pathinfo($originName, PATHINFO_FILENAME);
             $extention = $request->file('upload')->getClientOriginalExtension();

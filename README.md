@@ -4,59 +4,49 @@
 
 ## Using Process
 
-```bash
-
-```
+-   Make Route
 
 ```bash
-  git clone https://github.com/smshamimsr/portfolio.git && cd portfolio
+Route::post('ckeditor-upload', [CkuploadController::class, 'ckeditorUpload'])->name('ckeditor.upload');
 ```
 
-2. Install composer dependencies
+-   Using this script
 
 ```bash
-  composer install
+    <script>
+        ClassicEditor.create(document.querySelector('#upload'), {
+            ckfinder: {
+                uploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}"
+            }
+        }).catch(error => {
+            console.error(error);
+        });
+    </script>
 ```
 
-3. Create .env file
+-   Using this Method
 
 ```bash
-  cp .env.example .env
+   public function ckeditorUpload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extention = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extention;
+            $request->file('upload')->move(public_path('media'), $fileName);
+
+            $url = asset('media/' . $fileName);
+
+            return response()->json(['fileName' => $fileName, 'uploaded' => 1, 'url' => $url]);
+        }
+    }
 ```
 
-4. Generate key
+# Cdn
+
+-   Ck Editor
 
 ```bash
-  php artisan key:generate
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
 ```
-
-5. Install npm dependencies and build
-
-```bash
-  npm install && npm run build
-```
-
-6. Create database and change the credentials in .env file
-
-7. Run migrations and seed
-
-```bash
-  php artisan migrate --seed
-```
-
-8. Browse the site and login using below credentials
-
-```
-Email: admin@gmail.com
-Password: 12345678
-```
-
-# TODO
-
--   [x] Create Admin Panel
--   [ ] Create Blog
--   [ ] Create Pages
--   [ ] Create FAQ
--   [ ] Create Team
--   [ ] Create Contact
--   [ ] Create etc.
